@@ -32,7 +32,7 @@ var baseMaps = {
 var myMap = L.map("map", {
   center: [-0, -0],
   zoom: 3,
-  layers: [street]
+  layers: [streetM]
 });
 
 var legend = L.control({position: 'bottomright'});
@@ -58,7 +58,8 @@ legend.addTo(myMap);
 
 
 // Layer control
-L.control.layers(baseMaps, {}).addTo(myMap);
+//L.control.layers(baseMaps, {}).addTo(myMap);
+L.control.layers(baseMaps).addTo(map);
 
   
 //tile layer
@@ -76,6 +77,7 @@ function getColor(d) {
           d > 10   ? '#FED976' :
                     '#FFEDA0';
 };
+
 
 // API Query
 var baseURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
