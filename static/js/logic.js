@@ -1,40 +1,36 @@
-// Leaflet Part 1: Earthquake visualisation
+//Part 1 : Leaflet Earthquake visualisation
 
+// Creating the base layers for the visualisation.
 
-// Creating the base layers.
-
-//Streetmap
-var streetM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//Street layer
+var street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 })
 
-//topographic
-var topoM = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+
+//topography layer
+var topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 });
 
-// satellite map 
-var satM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-});
 
 
-
-// Create a baseMaps object.
+// Creating baseMaps object.
 var baseMaps = {
-  "Street Map": streetM,
-  "Topographic Map": topoM,
-  "Satellite Map": satM
+  "Street Map": street,
+  "Topographic Map": topo
 };
 
 
-// Defining map object.
+//defininf  object
 var myMap = L.map("map", {
   center: [-0, -0],
   zoom: 3,
-  layers: [streetM]
+  layers: [street]
 });
 
+
+//creating ledgend
 var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
@@ -42,7 +38,6 @@ legend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'info legend'),
         grades = [0, 10, 20, 50, 100, 200, 500, 1000],
         labels = [];
-
 
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
@@ -53,16 +48,17 @@ legend.onAdd = function (map) {
     return div;
 };
 
-//Ledgend for the map
+
+//adding ledgend to the map
 legend.addTo(myMap);
 
 
-// Layer control
-//L.control.layers(baseMaps, {}).addTo(myMap);
-L.control.layers(baseMaps).addTo(map);
+
+// controlling the layers
+L.control.layers(baseMaps, {}).addTo(myMap);
 
   
-//tile layer
+// tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
@@ -78,18 +74,16 @@ function getColor(d) {
                     '#FFEDA0';
 };
 
-
-// API Query
+// API Q and URL
 var baseURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
-// API query url.
 var url = baseURL;
 
 
   
-//D3.
+// use of d3 to get the data
 d3.json(url).then(function(response) {
- 
+
   var earthquakes = response.features;
   for (var i = 0; i < earthquakes.length; i++) {
     if (earthquakes[i].properties.mag < 0){
@@ -97,36 +91,40 @@ d3.json(url).then(function(response) {
       continue;
     };
 
-    
     var depth = earthquakes[i].geometry.coordinates[2];
     var color = getColor(depth);
     console.log(depth);
 
-    // Adding circles
+    // Adding circles, coord to the map.
     var coords = [earthquakes[i].geometry.coordinates[1],earthquakes[i].geometry.coordinates[0]];
- 
+    
+      
+      
       
     var size = earthquakes[i].properties.mag * 50000;
 
     L.circle(coords, {
       fillOpacity: 0.5,
-      color: "black",
+      color: "white",
       fillColor: color,
-      // Adjusting radius.
+     
+        // Adjusting the radius.
       radius: size
     }).bindPopup(`<h1>${earthquakes[i].properties.place}</h1> <hr> <h3>Magnitute: ${earthquakes[i].properties.mag}</h3><hr> <h3>Depth: ${earthquakes[i].geometry.coordinates[2]}</h3>`).addTo(myMap);
   }
 });
 
-//plotting tectonic plates on top of data
 
+
+//Plotting the tectonic plates
 var tectonic_url = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 d3.json(tectonic_url).then(function(response){
   console.log("read in url");
   console.log(response)
   L.geoJson(response, {
-    color: "#FF0000",
+    color: "#2e7de6",
     weight: 2
   }).addTo(myMap)
 });
+  
