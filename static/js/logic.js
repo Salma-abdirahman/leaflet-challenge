@@ -23,7 +23,7 @@ var satM = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Wor
 // Create a baseMaps object.
 var baseMaps = {
   "Street Map": streetM,
-  "Topographic Map": topoM
+  "Topographic Map": topoM,
   "Satellite Map": satM
 };
 
